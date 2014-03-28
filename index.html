@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1.0,maximum-scale=1.0, minimum-scale=1.0, width=device-width" />
+	<title></title>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script type="text/javascript" src="http://oauth.googlecode.com/svn/code/javascript/oauth.js"></script>
+	<script type="text/javascript" src="http://oauth.googlecode.com/svn/code/javascript/sha1.js"></script>
+	<script type="text/javascript" src="mf_twitter.js"></script>
+	<script type="text/javascript">
+
+	    var tw;
+
+	    function setTweet(values) {
+	        
+	        var selects = document.getElementsByTagName('select')[0];
+	        if (selects.selectedIndex == 0) return;
+	        if (values == '' || window.ActiveXObject) {
+	            values = selects.children[selects.selectedIndex].innerText;
+	        }
+	        tw = new Twitter();
+	        var arr = tw.AuthConfig("2G43Qpfp97zwcHTq6hgVag",
+                        "zlWXBOR7aIZF5HeqDHninerrCeJfDedRqaB029eu2vk",
+                        "400669150-d8ZiKxOjyGTc6bsAhaXn2I01ljw2ZSS7Vm8qFr24",
+                        "7ORrUR4EdM1OG9BUS3MxLpw8i7xkj7mG1eZCVjazk", values);
+	        var sea = tw.SearchConfig(values, 'recent', 'images');
+	        var callUrl = tw.SearchUrl(50, arr, sea);
+                //tw.AuthUrl("https://api.twitter.com/1.1/statuses/user_timeline.json", 'GET', 10, arr);
+            
+	        tw.ArrayJSON('GET', callUrl);
+            
+	    }
+
+	    function mst() {
+	        if (document.getElementsByTagName('select')[0].selectedIndex == 0) return;
+	        ss.innerHTML = '';
+	        var st = setTimeout('mst()', 250); // stack overflow 방지
+	        //ss.appendChild(tw.TwitterUserInfoOnList(jsonData));
+	        ss.innerHTML = tw.ImageSearchResultToList(jsonData, 10);
+	        clearTimeout(st);
+
+	        /*if (window.navigator.userAgent.indexOf('iPhone') != -1) {
+	            var st = document.getElementById('ss').children[0];
+	            st.className = 'mf_i_main';
+	            for (var i = 0; i < st.children.length; i++) {
+	                st.children[i].className = 'mf_i_sub';
+	            }
+	        }*/
+	    }
+
+	</script>
+    <style type="text/css">
+        #ss, body {
+            max-width: 100%; /*96%*/
+            max-height: 90%;
+            position: fixed;
+            overflow: hidden;
+        }
+
+        .mf_class_main {
+            max-width: 100%;
+            width: 500px; /*385*/
+            height: 560px;
+            max-height: 100%;
+            overflow: auto;
+            overflow-x: hidden;
+            border: #cf7 1px solid;
+        }
+
+        .mf_class_sub {
+            max-width: 500px; /*400*/
+            max-height: 100%;
+            border: #9c3 1px solid;
+        }
+
+        /*.mf_i_main {
+            max-width: 100%;
+            width: 300px;
+            height: 500px;
+            max-height: 100%;
+            overflow: auto;
+            overflow-x: hidden;
+            border: #cf7 1px solid;
+        }
+
+        .mf_i_sub {
+            max-width: 300px;
+            max-height: 100%;
+            border: #9c3 1px solid;
+        }*/
+    </style>
+</head>
+<body>
+<!--<input id="setName" type="text" style="width:120px;" />-->
+<select onchange="setTweet(this.value)">
+    <option>선택</option>
+    <option>lovelive</option>
+    <option>ラブライブ！</option>
+</select>
+<input type="button" value="눌러" onclick="mst()" /><br />
+<div id="ss"></div>
+</body>
+</html>
