@@ -361,7 +361,7 @@ Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidt
             	var ss = sa[i];
                 element += '<td>';
                 element += '<a href="' + ss[2] + '" alt="' + ss[1] + '" style="border: none;">';
-                element += '<img src="' + ss[0] + '" style="width: ' + imageWidth + 'px; padding: 0px 10px;" />';
+                element += '<img src="' + ss[0] + '" alt="' + ss[1] + '" style="width: ' + imageWidth + 'px; padding: 0px 10px;" />';
                 element += '</td>';
             }
             if (i % 2 == 1) {
