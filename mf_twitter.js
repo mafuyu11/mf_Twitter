@@ -106,6 +106,8 @@ Twitter.prototype.ArrayJSON = function (method, callbackURL) {
     }
 }
 
+Twitter.prototype.CallBackURLString = '';
+
 Twitter.prototype.TwitterUserInfo = function (jsonData) {
     var xml = '<xml>';
     for (var i = 0; i < jsonData.length; i++) {
@@ -228,21 +230,29 @@ Twitter.prototype.TwitterUserInfoOnList = function (jsonData) {
     return pdiv;
 }
 
+/// 트위터 검색 할때 사용하는 파라미터 (쿼리 스트링) 값을 지정
+/// q : 검색어 (# 해시태그 제외한 검색어)
+/// result_type : 결과정렬 (recent, popular, mix) 
+/// filter : 검색 필터 (images 등..)
 Twitter.prototype.SearchConfig = function (q, result_type, filter) {
     if (filter != '' && filter != null) {
-        q = q + ' -RT filter:' + filter; // ' -RT filter:images';
+        q = '#' + q + ' -RT filter:' + filter; // ' -RT filter:images';
     }
     var arrConfig = [q, result_type];
     return arrConfig;
 }
 
-Twitter.prototype.SearchUrl = function (listcnt, authConfig, searchConfig) {
+/// 트위터 검색결과를 가진 콜백 주소 반환
+/// listcnt : 검색결과 count (최대 100)
+/// authConfig : 인증관련 설정 (AuthConfig) 값 지정
+/// searchConfig : 검색 관련 설정 (SearchConfig) 값 지정 
+Twitter.prototype.SearchUrl = function (authConfig, searchConfig) {
 
     var authMessage = {
         method: 'GET',
         action: 'https://api.twitter.com/1.1/search/tweets.json',
         parameters: {
-            count: listcnt,
+            count: 200,
             oauth_version: '1.0',
             oauth_signature_method: 'HMAC-SHA1',
             oauth_consumer_key: authConfig[0],
@@ -263,7 +273,11 @@ Twitter.prototype.SearchUrl = function (listcnt, authConfig, searchConfig) {
     OAuth.setTimestampAndNonce(authMessage);
     OAuth.SignatureMethod.sign(authMessage, authSecreat);
 
-    return OAuth.addToURL(authMessage.action, authMessage.parameters);
+    var url = OAuth.addToURL(authMessage.action, authMessage.parameters);
+
+    this.CallBackURLString = url;
+
+    return url;
 }
 
 Twitter.prototype.TwitterSearchXML = function (jsonData) {
@@ -319,36 +333,49 @@ Twitter.prototype.TwitterSearchXML = function (jsonData) {
     return stringToXML(xml);
 }
 
-Twitter.prototype.ImageSearchResultToList = function (jsonData, imageWidth) {
-
-    if (!jsonData) return;
-    var datas = jsonData['statuses'];
-    var element = '<div>';
-    var setArr = new Array();
-    for (var i = 0; i < datas.length; i++) {
-        //if (!datas[i].entities.media) return;
-        var dt = datas[i].entities;
-        for (var media in dt) {
-            if (media == 'media') {
-                var arr = dt[media];
-                setArr.push(arr[0].media_url);
+Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidth) {
+ 
+    if (typeof (jsonData) != 'undefined' || jsonData != null) {
+        var datas = jsonData['statuses'];
+        var element = '<table class="mf_class_main">';
+        var setArr = new Array();
+        for (var i = 0; i < datas.length; i++) {
+            //if (!datas[i].entities.media) return;
+            var dt = datas[i].entities;
+            for (var media in dt) {
+                if (media == 'media') {
+                    var arr = dt[media];
+                    setArr.push(arr[0].media_url);
+                }
             }
         }
-    }
-    var sa = unique(setArr);
-    for (var i = 0; i < sa.length; i++) {
-
-        if (!isNaN(imageWidth)) {
-            element += '<img src="' + unique(unique(sa))[i] + '" style="width: ' + imageWidth + 'px; padding: 0px 10px;" />';
+        element += '<tbody class="scrollView">';
+        var sa = duplicate(setArr);
+        for (var i = 0; i < count; i++) {
+            if (i % 2 == 0) {
+                element += '<tr num="' + i/2 + '">';
+            }
+            if (!isNaN(imageWidth)) {
+                element += '<td>';
+                element += '<img src="' + sa[i] + '" style="width: ' + imageWidth + 'px; padding: 0px 10px;" />';
+                element += '</td>';
+            }
+            if (i % 2 == 1) {
+                element += '</tr>';
+            }
         }
-    }
 
-    element += '</div>';
-    
-    return element;
+        element += '</tbody>';
+        element += '</table>';
+
+        return element;
+    }
+    else {
+        return '재시도 해주세요.';
+    }
 }
 
-var unique = function (origArr) {
+var duplicate = function (origArr) {
     var newArr = new Array(),
         origLen = origArr.length,
         found,
