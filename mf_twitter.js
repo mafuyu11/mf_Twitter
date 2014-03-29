@@ -360,7 +360,7 @@ Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidt
             if (!isNaN(imageWidth)) {
             	var ss = sa[i];
                 element += '<td>';
-                element += '<a href="' + ss[2] + '" alt="' + ss[1] + '" style="border: none;">';
+                element += '<a href="' + ss[2] + '" alt="' + ss[1] + '" target="_blank" style="border: none;">';
                 element += '<img src="' + ss[0] + '" alt="' + ss[1] + '" style="width: ' + imageWidth + 'px; padding: 0px 10px;" />';
                 element += '</td>';
             }
