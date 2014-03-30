@@ -99,8 +99,9 @@ Twitter.prototype.ArrayJSON = function (method, callbackURL) {
         dataType: 'jsonp',
         jsonp: false,
         cache: true
-    });
-
+    }); // pure 자바스크립트 내에서 해결 방안 모색 중 입니다.
+    // 임시 방편으로 JQuery 라이브러리의 Ajax 처리 했습니다.
+    
     mf_callback = function (data) {
         jsonData = data;
     }
