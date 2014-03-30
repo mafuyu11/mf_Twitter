@@ -73,7 +73,8 @@ Twitter.prototype.AuthUrl = function(jsonUrl, method, listcnt, authConfig) {
             screen_name: authConfig[4],
             callback: 'mf_callback'
         }
-    };
+    }; // oauth 1.0 인증을 object화 해서 보냅니다.
+    // object 내 속성 네임은 oauth 1.0 라이브러리에서 지정한 대로 썼습니다.
 
     var authSecreat = {
         consumerSecret: authConfig[1],
