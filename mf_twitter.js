@@ -375,7 +375,7 @@ Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidt
         return element;
     }
     else {
-        return '재시도 해주세요.';
+        return '검색 버튼을 다시 눌러주세요.';
     }
 }
 
