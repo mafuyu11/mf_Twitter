@@ -73,8 +73,9 @@ Twitter.prototype.AuthUrl = function(jsonUrl, method, listcnt, authConfig) {
             screen_name: authConfig[4],
             callback: 'mf_callback'
         }
-    }; // oauth 1.0 인증을 object화 해서 보냅니다.
+    }; // oauth 1.0 인증을 사용하는 트위터의 URL 특성상.. 다음과 같이 형식에 맟춰서 object로 보냅니다.
     // object 내 속성 네임은 oauth 1.0 라이브러리에서 지정한 대로 썼습니다.
+    // 추가적인 파라미터 (쿼리스트링)은 parameters 내의 callback 다음으로 추가가 가능합니다.
 
     var authSecreat = {
         consumerSecret: authConfig[1],
