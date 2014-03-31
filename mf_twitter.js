@@ -105,7 +105,8 @@ Twitter.prototype.ArrayJSON = function (method, callbackURL) {
     
     mf_callback = function (data) {
         jsonData = data;
-    }
+    } // json-p 방식으로 json을 가져오는 트위터 방식의 특성상, 콜백 함수 이름을 지정해야 했으며,
+    // Ajax 처리 직 후, 생성되는 콜백 함수의 데이터 (json)를 가져오기 위해 사용 했습니다. 
 }
 
 Twitter.prototype.CallBackURLString = '';
