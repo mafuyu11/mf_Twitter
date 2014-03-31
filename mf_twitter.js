@@ -54,18 +54,15 @@ Twitter.prototype.AuthConfig = function(api_key, api_secreat,
 
 /// AuthConfig가 설정 됬을 때, api에서 제공하는 JSON url을 받아서
 /// 해당 카운트 만큼 데이터를 가져오는 url을 제공 
-/// jsonUrl : 트위터 api에 있는 JSON 주소 값
-/// method : GET, POST 와 같은 전송 메서드 문자열
-/// listcnt : 해당 JSON 주소에서 가져올 데이터 개수 (정수)
 /// authConfig : 트위터 클래스 개체의 AuthConfig 값
 /// 반환 : REST (파라미터, 쿼리스트링) 형식의 URL 문자열 반환 
-Twitter.prototype.AuthUrl = function(jsonUrl, method, listcnt, authConfig) {
+Twitter.prototype.UserTimeLineUrl = function(authConfig) {
     
     var authMessage = {
-        method: method,
-        action: jsonUrl,
+        method: 'GET',
+        action: 'https://api.twitter.com/1.1/statuses/user_timeline.json',
         parameters: {
-            count: listcnt,
+            count: 200,
             oauth_version: '1.0',
             oauth_signature_method: 'HMAC-SHA1',
             oauth_consumer_key: authConfig[0],
@@ -93,7 +90,7 @@ Twitter.prototype.AuthUrl = function(jsonUrl, method, listcnt, authConfig) {
 /// callbackURL : AuthUrl 에서 반환된 URL 문자열
 /// 반환 : 전역 변수 twitterData에 JSON 형식의 배열 값을 적용
 /// 선행 조건 : JQuery 필수 
-Twitter.prototype.ArrayJSON = function (method, callbackURL) {
+Twitter.prototype.GetJSON = function (method, callbackURL) {
 
     $.ajax({
         type: method,
@@ -112,58 +109,11 @@ Twitter.prototype.ArrayJSON = function (method, callbackURL) {
 
 Twitter.prototype.CallBackURLString = '';
 
-Twitter.prototype.TwitterUserInfo = function (jsonData) {
-    var xml = '<xml>';
-    for (var i = 0; i < jsonData.length; i++) {
-        var dataJ = jsonData[i];
-        xml += '<userData num="' + i + '">';
-        for (var jd in dataJ) {
-            if (jd != 'user') {
-                if (jd != 'entities') {
-                    xml += '<' + jd + '>' + dataJ[jd] + '</' + jd + '>';
-                }
-                else {
-                    xml += '<entities>';
-                    var ent = dataJ[jd];
-                    for (var jd in ent) {
-                        if (jd == 'urls') {
-                            xml += '<urls>';
-                            var url = ent[jd];
-                            var ul = url[0];
-                            for (var se in ul) {
-                                if (se != 'indices') {
-                                    xml += '<' + se + '>' + '<![CDATA["' + ul[se] + '"]]>' + '</' + se + '>';
-                                }
-                            }
-                            xml += '</urls>';
-                        }
-                    }
-                    xml += '</entities>';
-                }
-            }
-            else {
-                xml += '<user>';
-                var setUser = dataJ[jd];
-                for (var sub in setUser) {
-                    if (sub != 'entities') {
-                        xml += '<' + sub + '>' + setUser[sub] + '</' + sub + '>';
-                    }
-                }
-                xml += '</user>';
-            }
-        }
-        xml += '</userData>';
-    }
-    xml += '</xml>';
-
-    return stringToXML(xml);
-}
-
-Twitter.prototype.TwitterUserInfoOnList = function (jsonData) {
+Twitter.prototype.TwitterUserTimeLineOnList = function (jsonData, count) {
 	if(!jsonData) return;
     var profileImg, userName, userAcc, link, texts, times, ids, account;
     var pdiv = document.createElement('div');
-    for (var i = 0; i < jsonData.length; i++) {
+    for (var i = 0; i < count; i++) {
         var fdiv = document.createElement('div');
         var dataJ = jsonData[i];
         for (var jd in dataJ) {
@@ -247,7 +197,6 @@ Twitter.prototype.SearchConfig = function (q, result_type, filter) {
 }
 
 /// 트위터 검색결과를 가진 콜백 주소 반환
-/// listcnt : 검색결과 count (최대 100)
 /// authConfig : 인증관련 설정 (AuthConfig) 값 지정
 /// searchConfig : 검색 관련 설정 (SearchConfig) 값 지정 
 Twitter.prototype.SearchUrl = function (authConfig, searchConfig) {
@@ -282,59 +231,6 @@ Twitter.prototype.SearchUrl = function (authConfig, searchConfig) {
     this.CallBackURLString = url;
 
     return url;
-}
-
-Twitter.prototype.TwitterSearchXML = function (jsonData) {
-    var xml = '<xml>';
-    for (var ds in jsonData) {
-        if (ds == 'statuses') {
-            var searchQ = jsonData[ds];
-            for (var i = 0; i < searchQ.length; i++) {
-                xml += '<searchData num="' + i + '">';
-                var jd = searchQ[i];
-                for (var si in jd) {
-                    if (si != 'metadata' && si != 'retweeted_status') {
-                        if (si != 'user') {
-                            if (si != 'entities') {
-                                xml += '<' + si + '>' + jd[si] + '</' + si + '>';
-                            }
-                            else {
-                                xml += '<entities>';
-                                var media = jd[si];
-                                for (var js in media) {
-                                    if (js == 'media') {
-                                        xml += '<media>';
-                                        var arrMedia = media[js];
-                                        for (var sm in arrMedia[0]) {
-                                            if (sm != 'indices' && sm != 'sizes') {
-                                                xml += '<' + sm + '>' + arrMedia[0][sm] + '</' + sm + '>';
-                                            }
-                                        }
-                                        xml += '</media>';
-                                    }
-                                }
-                                xml += '</entities>';
-                            }
-                        }
-                        else {
-                            xml += '<user>';
-                            var setUser = jd[si];
-                            for (var sub in setUser) {
-                                if (sub != 'entities') {
-                                    xml += '<' + sub + '>' + setUser[sub] + '</' + sub + '>';
-                                }
-                            }
-                            xml += '</user>';
-                        }
-                    }
-                }
-                xml += '</searchData>';
-            }
-        }
-    }
-    xml += '</xml>';
-
-    return stringToXML(xml);
 }
 
 Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidth) {
