@@ -238,9 +238,7 @@ Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidt
     if (typeof (jsonData) != 'undefined' || jsonData != null) {
         var datas = jsonData['statuses'];
         var element = '<table class="mf_class_main">';
-        var setArr = new Array();
-        var edArr = new Array();
-        var arr = '';
+        
         for (var i = 0; i < datas.length; i++) {
             //if (!datas[i].entities.media) return;
             var dt = datas[i].entities;
@@ -248,12 +246,11 @@ Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidt
             for (var media in dt) {
                 if (media == 'media') {
                     arr = dt[media];
-                    setArr.push(arr[0].media_url);
                 }
             }
         }
         element += '<tbody class="scrollView">';
-        var sa = duplicate(setArr);
+
         for (var i = 0; i < count; i++) {
             if (i % 2 == 0) {
                 element += '<tr num="' + i/2 + '">';
@@ -261,8 +258,8 @@ Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidt
             if (!isNaN(imageWidth)) {
             	//var ss = sa[i];
                 element += '<td>';
-                element += '<a href="' + sa[i] + '" target="_blank" style="border: none;">';
-                element += '<img src="' + sa[i] + '" style="width: ' + imageWidth + 'px; padding: 0px 7px;" />';
+                element += '<a href="' + arr[i].media_url + '" target="_blank" style="border: none;">';
+                element += '<img src="' + arr[i].media_url + '" style="width: ' + imageWidth + 'px; padding: 0px 7px;" />';
                 element += '</td>';
             }
             if (i % 2 == 1) {
