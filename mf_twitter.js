@@ -238,14 +238,14 @@ Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidt
     if (typeof (jsonData) != 'undefined' || jsonData != null) {
         var datas = jsonData['statuses'];
         var element = '<table class="mf_class_main">';
-        
+        var arr = new Array();
         for (var i = 0; i < datas.length; i++) {
             //if (!datas[i].entities.media) return;
             var dt = datas[i].entities;
             var user = datas[i].user.name;
             for (var media in dt) {
                 if (media == 'media') {
-                    arr = dt[media];
+                    arr.push(dt[media]);
                 }
             }
         }
@@ -258,7 +258,7 @@ Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidt
             if (!isNaN(imageWidth)) {
             	//var ss = sa[i];
                 element += '<td>';
-                element += '<a href="' + arr[i].media_url + '" target="_blank" style="border: none;">';
+                element += '<a href="' + arr[i].expanded_url + '" target="_blank" style="border: none;">';
                 element += '<img src="' + arr[i].media_url + '" style="width: ' + imageWidth + 'px; padding: 0px 7px;" />';
                 element += '</td>';
             }
