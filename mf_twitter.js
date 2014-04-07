@@ -257,7 +257,7 @@ Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidt
             }
             if (!isNaN(imageWidth)) {
             	//var ss = sa[i];
-            	if(arr[i][0].expanded_url.indexOf('bot') <= -1){
+            	if(arr[i][0].expanded_url.indexOf('bot') == -1){
                 element += '<td>';
                 element += '<a href="' + arr[i][0].expanded_url + '" target="_blank" style="border: none;">';
                 element += '<img src="' + arr[i][0].media_url + '" style="width: ' + imageWidth + 'px; padding: 0px 7px;" />';
