@@ -258,8 +258,8 @@ Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidt
             if (!isNaN(imageWidth)) {
             	//var ss = sa[i];
                 element += '<td>';
-                element += '<a href="' + arr[i].expanded_url + '" target="_blank" style="border: none;">';
-                element += '<img src="' + arr[i].media_url + '" style="width: ' + imageWidth + 'px; padding: 0px 7px;" />';
+                element += '<a href="' + arr[i][0].expanded_url + '" target="_blank" style="border: none;">';
+                element += '<img src="' + arr[i][0].media_url + '" style="width: ' + imageWidth + 'px; padding: 0px 7px;" />';
                 element += '</td>';
             }
             if (i % 2 == 1) {
