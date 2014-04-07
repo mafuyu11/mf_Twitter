@@ -40,7 +40,7 @@
                 if (document.getElementsByTagName('select')[0].selectedIndex == 0) return;
                 ss.innerHTML = '';
                 var st = setTimeout('mst()', 250); // stack overflow 방지
-                ss.innerHTML = tw.ImageSearchResultToList(jsonData, 50, 140); // width 140
+                ss.innerHTML = tw.ImageSearchResultToList(jsonData, 200, 140); // width 140
                 clearTimeout(st);
             }
 
