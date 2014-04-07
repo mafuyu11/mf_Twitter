@@ -259,10 +259,10 @@ Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidt
                 element += '<tr num="' + i/2 + '">';
             }
             if (!isNaN(imageWidth)) {
-            	var ss = sa[i];
+            	//var ss = sa[i];
                 element += '<td>';
-                element += '<a href="' + ss[0] + '" target="_blank" style="border: none;">';
-                element += '<img src="' + ss[0] + '" style="width: ' + imageWidth + 'px; padding: 0px 7px;" />';
+                element += '<a href="' + sa[i] + '" target="_blank" style="border: none;">';
+                element += '<img src="' + sa[i] + '" style="width: ' + imageWidth + 'px; padding: 0px 7px;" />';
                 element += '</td>';
             }
             if (i % 2 == 1) {
