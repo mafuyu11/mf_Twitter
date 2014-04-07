@@ -257,10 +257,12 @@ Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidt
             }
             if (!isNaN(imageWidth)) {
             	//var ss = sa[i];
+            	if(arr[i][0].media_url != arr[i-1][0].media_url){
                 element += '<td>';
                 element += '<a href="' + arr[i][0].expanded_url + '" target="_blank" style="border: none;">';
                 element += '<img src="' + arr[i][0].media_url + '" style="width: ' + imageWidth + 'px; padding: 0px 7px;" />';
                 element += '</td>';
+            	}
             }
             if (i % 2 == 1) {
                 element += '</tr>';
