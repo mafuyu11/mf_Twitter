@@ -252,21 +252,27 @@ Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidt
         element += '<tbody class="scrollView">';
 
         for (var i = 0; i < count; i++) {
-            if (i % 2 == 0) {
+            try{
+		if(arr[i][0].expanded_url.indexOf('bot') != -1) {
+                   i = i + 1;
+		   continue;
+		}
+		if (i % 2 == 0) {
                 element += '<tr num="' + i/2 + '">';
             }
             if (!isNaN(imageWidth)) {
             	//var ss = sa[i];
-            	if(arr[i][0].expanded_url.indexOf('bot') == -1){
+            	
                 element += '<td>';
                 element += '<a href="' + arr[i][0].expanded_url + '" target="_blank" style="border: none;">';
                 element += '<img src="' + arr[i][0].media_url + '" style="width: ' + imageWidth + 'px; padding: 0px 7px;" />';
                 element += '</td>';
-            	}
             }
             if (i % 2 == 1) {
                 element += '</tr>';
             }
+		}
+		catch(e) {}
         }
 
         element += '</tbody>';
