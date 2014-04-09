@@ -281,25 +281,6 @@ Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidt
         return element;
     }
     else {
-        return this;
+        return '재시도 해주세요..';
     }
-}
-
-var duplicate = function (origArr) {
-    var newArr = new Array(),
-        origLen = origArr.length,
-        found,
-        x, y;
-
-    for (x = 0; x < origLen; x++) {
-        found = undefined;
-        for (y = 0; y < newArr.length; y++) {
-            if (origArr[x] === newArr[y]) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) newArr.push(origArr[x]);
-    }
-    return newArr;
 }
