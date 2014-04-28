@@ -1,55 +1,87 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Language" content="ja" />
     <meta name="viewport" content="user-scalable=no, initial-scale=1.0,maximum-scale=1.0, minimum-scale=1.0, width=device-width" />
-        <title>러브라이브 트위터 일러스트</title>
-        <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
-        <script type="text/javascript" src="http://oauth.googlecode.com/svn/code/javascript/oauth.js"></script>
-        <script type="text/javascript" src="http://oauth.googlecode.com/svn/code/javascript/sha1.js"></script>
-        <script type="text/javascript" src="mf_twitter.js"></script>
-        <script type="text/javascript">
+    <title>러브라이브 트위터 일러스트</title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script type="text/javascript" src="http://oauth.googlecode.com/svn/code/javascript/oauth.js"></script>
+    <script type="text/javascript" src="http://oauth.googlecode.com/svn/code/javascript/sha1.js"></script>
+    <script type="text/javascript" src="mf_twitter.js"></script>
+    <script type="text/javascript">
 
-            var tw;
+        var tw = null;
+        var arr = '';
+        var values = '';
 
-            function setTweet(values) {
+        onload = function () {
 
-                if (jsonData) {
-                    jsonData = null;
-                }
+            tw = new Twitter();
+            arr = tw.AuthConfig("2G43Qpfp97zwcHTq6hgVag",
+                    "zlWXBOR7aIZF5HeqDHninerrCeJfDedRqaB029eu2vk",
+                    "400669150-d8ZiKxOjyGTc6bsAhaXn2I01ljw2ZSS7Vm8qFr24",
+                    "7ORrUR4EdM1OG9BUS3MxLpw8i7xkj7mG1eZCVjazk", 'Siena_Mafuyu');
+        }
 
-                var selects = document.getElementsByTagName('select')[0];
-                if (selects.selectedIndex == 0) return;
-                if (values == '' || window.ActiveXObject) {
-                    values = selects.children[selects.selectedIndex].innerText;
-                }
-                tw = new Twitter();
-                var arr = tw.AuthConfig("2G43Qpfp97zwcHTq6hgVag",
-                        "zlWXBOR7aIZF5HeqDHninerrCeJfDedRqaB029eu2vk",
-                        "400669150-d8ZiKxOjyGTc6bsAhaXn2I01ljw2ZSS7Vm8qFr24",
-                        "7ORrUR4EdM1OG9BUS3MxLpw8i7xkj7mG1eZCVjazk", values);
+        function setTweet(values) {
+
+            if (jsonData) {
+                jsonData = null;
+            }
+
+            var selects = document.getElementsByTagName('select')[0];
+            if (selects.selectedIndex == 0) return;
+
+            if (selects.selectedIndex <= 2) {
                 var sea = tw.SearchConfig(values, 'recent', 'images');
                 var callUrl = tw.SearchUrl(arr, sea);
-                //tw.AuthUrl("https://api.twitter.com/1.1/statuses/user_timeline.json", 'GET', 10, arr);
-
                 tw.GetJSON('GET', callUrl);
-
             }
+            else {
+                var config = '';
+                if (selects.selectedIndex == 4) {
+                    config = tw.ListConfig(values, arr[4], '93476247');
+                }
+                else{
+                    config = tw.ListConfig(values, arr[4], '117950131');
+                }
+                var url = tw.ListStatusURL(arr, config);
+                tw.GetJSON('GET', url);
+            }
+        }
 
-            function mst() {
-                if (document.getElementsByTagName('select')[0].selectedIndex == 0) return;
-                ss.innerHTML = '';
+        function mst() {
+            if (document.getElementsByTagName('select')[0].selectedIndex == 0) return;
+            ss.innerHTML = '';
+            if (document.getElementsByTagName('select')[0].selectedIndex <= 2) {
+
                 var st = setTimeout('mst()', 250); // stack overflow 방지
-                ss.innerHTML = tw.ImageSearchResultToList(jsonData, 200, 140); // width 140
+                ss.innerHTML = tw.ImageSearchResultToList(jsonData, 100, 140); // width 140
                 clearTimeout(st);
-            }
 
-        </script>
+                var sb = null;
+                try {
+                    sb = setTimeout('arrangeList()', 500);
+                    clearTimeout(sb);
+                }
+                catch (e) { }
+            }
+            else {
+                try {
+                    var st = setTimeout('mst()', 250);
+                    ss.innerHTML = tw.ListStatusToTable(jsonData, 100);
+                    arrangeListToCell(mf_list_Tbl, 100);
+                    clearTimeout(st);
+                }
+                catch (e) { }
+            }
+        }
+
+    </script>
     <style type="text/css">
         #ss, body {
             max-width: 98%; /*96%*/
-            width: 300;
-            height: 540;
             max-height: 95%;
             overflow: hidden;
         }
@@ -60,8 +92,12 @@
             max-height: 96%;
             overflow: auto;
             overflow-x: hidden;
-            border: #cf7 1px solid;
+            border: #bbb 1px solid;
         }
+
+        .mf_class_main td:hover {
+                background-color: #f5f8fa;
+         }
 
         .mf_class_sub {
             max-width: 500px; /*400*/
@@ -73,21 +109,32 @@
             display: block;
             padding: 0px 10px 0px 0px;
             position: relative;
-            overflow:auto;
+            overflow: auto;
             overflow-x: hidden;
             height: 450px;
         }
+        
+        nav li { display: inline-block; background-color: #f4f; }
     </style>
 </head>
-<body style="overflow: hidden;">
-    <div>
-<select onchange="setTweet(this.value)">
-    <option>선택</option>
-    <option value="ラブライブ版深夜の真剣お絵描き60分一本勝負">러브라이브 60분 안에 그려보았다</option>
-    <option value="ラブライブ！">러브라이브</option>
-</select>
-<input type="button" value="검색" onclick="mst()" /></div>
-<div id="ss"></div>
-<img src="clearillust.gif" alt="원화가 명시 캠페인" style="max-width:95%; border:none;"/>
+<body>
+    <header>
+        <select onchange="setTweet(this.value)">
+            <option>선택</option>
+            <option value="ラブライブ版深夜の真剣お絵描き60分一本勝負">러브라이브 60분 안에 그려보았다</option>
+            <option value="ラブライブ！">러브라이브 관련 이미지</option>
+            <option value="러브라이브 관련 원화가 정보">원화가 정보 리스트 (러브라이브)</option>
+            <option value="일러스트레이터 정보">원화가 정보 리스트 (종합)</option>
+        </select>
+        <input type="button" value="검색" onclick="mst()" />
+    </header>
+    <section>
+        <article>
+            <div id="ss"></div>
+        </article>
+    </section>
+    <footer>
+        <img src="clearillust.gif" alt="원화가 명시 캠페인" style="max-width: 95%; border: none;" />
+    </footer>
 </body>
 </html>
