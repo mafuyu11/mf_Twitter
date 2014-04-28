@@ -1,4 +1,4 @@
-﻿function stringToXML(xmlStr) {
+function stringToXML(xmlStr) {
 	var xmldom = '';
 	if(window.ActiveXObject){
 		xmldom = new ActiveXObject("Microsoft.XMLDOM");
@@ -10,6 +10,17 @@
 		xmldom = parser.parseFromString(xmlStr, "text/xml"); 
 	}
 	return xmldom;
+}
+
+function isIE(){
+    var flag = false;
+    if(window.ActiveXObject){
+        alert('IE에서는 사용 불가 합니다.');
+        window.history.go(-1);
+        flag = true;
+    }
+
+    return flag;
 }
 
 function AjaxToRequest() {
@@ -89,18 +100,17 @@ Twitter.prototype.UserTimeLineUrl = function(authConfig) {
 /// method : POST, GET 과 같은 전송 메서드 문자열
 /// callbackURL : AuthUrl 에서 반환된 URL 문자열
 /// 반환 : 전역 변수 twitterData에 JSON 형식의 배열 값을 적용
-/// 선행 조건 : JQuery 필수 
+/// 선행 조건 : JQuery 필수
 Twitter.prototype.GetJSON = function (method, callbackURL) {
+        $.ajax({
+            type: method,
+            url: callbackURL,
+            dataType: 'jsonp',
+            jsonp: false,
+            cache: true
+        }); // pure 자바스크립트 내에서 해결 방안 모색 중 입니다.
+        // 임시 방편으로 JQuery 라이브러리의 Ajax 처리 했습니다.
 
-    $.ajax({
-        type: method,
-        url: callbackURL,
-        dataType: 'jsonp',
-        jsonp: false,
-        cache: true
-    }); // pure 자바스크립트 내에서 해결 방안 모색 중 입니다.
-    // 임시 방편으로 JQuery 라이브러리의 Ajax 처리 했습니다.
-    
     mf_callback = function (data) {
         jsonData = data;
     } // json-p 방식으로 json을 가져오는 트위터 방식의 특성상, 콜백 함수 이름을 지정해야 했으며,
@@ -233,14 +243,51 @@ Twitter.prototype.SearchUrl = function (authConfig, searchConfig) {
     return url;
 }
 
+function isMobile(targetWindow){
+    var flag = false;
+	if(targetWindow.navigator.userAgent.indexOf('Android') > -1
+    || targetWindow.navigator.userAgent.indexOf('iPhone') > -1
+    || targetWindow.navigator.userAgent.indexOf('iPod') > -1
+    || targetWindow.navigator.userAgent.indexOf('PodBlackBerry') > -1
+    || targetWindow.navigator.userAgent.indexOf('webOS')> -1
+    || targetWindow.navigator.userAgent.indexOf('Windows Phone') > -1){
+        flag = true;
+    }
+       
+	return flag;
+}
+
+var arrangeflag = false;
+function arrangeList(){
+   
+    try {
+        var rowCnt = mf_tweet_tbl.rows.length;
+        for (var i = 0; i < rowCnt; i++) {
+            if (isMobile(window) == false) {
+                if (mf_tweet_tbl.rows[i].cells.length != 5) {
+                    mf_tweet_tbl.rows[i].remove();
+                    arrangeflag = true;
+                }
+            }
+            else {
+                if (mf_tweet_tbl.rows[i].cells.length != 2) {
+                    mf_tweet_tbl.rows[i].remove();
+                    arrangeflag = true;
+                }
+            }
+        }
+    }
+    catch (e) { arrangeList(); }
+}
+
 Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidth) {
- 
+
     if (typeof (jsonData) != 'undefined' || jsonData != null) {
         var datas = jsonData['statuses'];
-        var element = '<table class="mf_class_main">';
+        var element = '<table id="mf_tweet_tbl" class="mf_class_main">';
         var arr = new Array();
         for (var i = 0; i < datas.length; i++) {
-            //if (!datas[i].entities.media) return;
+
             var dt = datas[i].entities;
             var user = datas[i].user.name;
             for (var media in dt) {
@@ -252,27 +299,51 @@ Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidt
         element += '<tbody class="scrollView">';
 
         for (var i = 0; i < count; i++) {
-            try{
-		if(arr[i][0].expanded_url.indexOf('bot') != -1) {
-                   i = i + 1;
-		   continue;
-		}
-		if (i % 2 == 0) {
-                element += '<tr num="' + i/2 + '">';
+            if (isMobile(window) == true) {
+                try {
+                    if (arr[i][0].expanded_url.indexOf('bot') > -1) {
+                        //i = i + 1;
+                        continue;
+                    }
+
+                    if (i % 2 == 0) {
+                        element += '<tr num="' + i / 2 + '">';
+                    }
+                    if (!isNaN(imageWidth)) {
+
+                        element += '<td>';
+                        element += '<a href="' + arr[i][0].expanded_url + '" target="_blank" style="border: none;">';
+                        element += '<img src="' + arr[i][0].media_url + '" style="width: ' + imageWidth + 'px; padding: 0px 7px;" />';
+                        element += '</td>';
+                    }
+                    if (i % 2 == 1) {
+                        element += '</tr>';
+                    }
+                }
+                catch (e) { }
             }
-            if (!isNaN(imageWidth)) {
-            	//var ss = sa[i];
-            	
-                element += '<td>';
-                element += '<a href="' + arr[i][0].expanded_url + '" target="_blank" style="border: none;">';
-                element += '<img src="' + arr[i][0].media_url + '" style="width: ' + imageWidth + 'px; padding: 0px 7px;" />';
-                element += '</td>';
+            else {
+                try {
+                    if (arr[i][0].expanded_url.indexOf('bot') > -1) {
+                        //i = i + 1;
+                        continue;
+                    }
+
+                    if (i % 5 == 0) {
+                        element += '<tr num="' + i + '">';
+                    }
+                    if (!isNaN(imageWidth)) {
+                        element += '<td>';
+                        element += '<a href="' + arr[i][0].expanded_url + '" target="_blank" style="border: none;">';
+                        element += '<img src="' + arr[i][0].media_url + '" style="width: ' + imageWidth + 'px; padding: 0px 7px;" />';
+                        element += '</td>';
+                    }
+                    if (i % 5 == 4) {
+                        element += '</tr>';
+                    }
+                }
+                catch (e) { }
             }
-            if (i % 2 == 1) {
-                element += '</tr>';
-            }
-		}
-		catch(e) {}
         }
 
         element += '</tbody>';
@@ -281,6 +352,146 @@ Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidt
         return element;
     }
     else {
-        return '재시도 해주세요..';
+        //this.ImageSearchResultToList(jsonData, count, imageWidth);
+        return '재검색 해주세요..';
+    }
+}
+
+Twitter.prototype.ListConfig = function (slug, ownerScreenName, listID) {
+    var arrConfig = [slug, ownerScreenName, listID];
+    return arrConfig;
+}
+
+Twitter.prototype.FindListIdURL = function(authConfig, screenName){
+    var authMessage = {
+        method: 'GET',
+        action: 'https://api.twitter.com/1.1/lists/list.json',
+        parameters: {
+            count: 10,
+            oauth_version: '1.0',
+            oauth_signature_method: 'HMAC-SHA1',
+            oauth_consumer_key: authConfig[0],
+            oauth_token: authConfig[2],
+            screen_name: authConfig[4],
+            callback: 'mf_callback',
+            screen_name: screenName
+        }
+    };
+
+    var authSecreat = {
+        consumerSecret: authConfig[1],
+        tokenSecret: authConfig[3]
+    };
+
+    OAuth.setTimestampAndNonce(authMessage);
+    OAuth.SignatureMethod.sign(authMessage, authSecreat);
+
+    var url = OAuth.addToURL(authMessage.action, authMessage.parameters);
+
+    this.CallBackURLString = url;
+
+    return url;
+}
+
+Twitter.prototype.ListStatusURL = function(authConfig, listConfig){
+    var authMessage = {
+        method: 'GET',
+        action: 'https://api.twitter.com/1.1/lists/statuses.json',
+        parameters: {
+            count: 200,
+            oauth_version: '1.0',
+            oauth_signature_method: 'HMAC-SHA1',
+            oauth_consumer_key: authConfig[0],
+            oauth_token: authConfig[2],
+            screen_name: authConfig[4],
+            callback: 'mf_callback',
+            owner_screen_name: listConfig[1],
+            slug: listConfig[0],
+            list_id: listConfig[2]
+        }
+    };
+
+    var authSecreat = {
+        consumerSecret: authConfig[1],
+        tokenSecret: authConfig[3]
+    };
+
+    OAuth.setTimestampAndNonce(authMessage);
+    OAuth.SignatureMethod.sign(authMessage, authSecreat);
+
+    var url = OAuth.addToURL(authMessage.action, authMessage.parameters);
+
+    this.CallBackURLString = url;
+
+    return url;
+}
+
+Twitter.prototype.ListStatusToTable = function (jsonData, count) {
+    if (typeof (jsonData) != 'undefined' || jsonData != null) {
+        var table = '<table id="mf_list_Tbl" class="mf_class_main">';
+        table += '<tbody class="scrollView">';
+        for (var i = 0; i < count; i++) {
+            var datas = jsonData[i];
+            table += '<tr num="' + i + '">';
+            for (var obj in datas) {
+                switch (obj) {
+                    case 'text':
+                        table += '<td colspan="2" style="border: #f5f8fa 1px solid">';
+                        if (datas[obj].indexOf('http:') > -1) {
+                            table += '<p>' + datas[obj].split('http:')[0] + '</p>'
+                            + '<a href="http:' + datas[obj].split(/http:/g)[1].split(/\n|\r\n| |　/g)[0] + '" target="_blank">http:'
+                            + datas[obj].split(/http:/g)[1].split(/\n|\r\n| |　/g)[0] + '</a>';
+                        }
+                        else {
+                            table += '<p>' + datas[obj] + '</p>';
+                        }
+                        break;
+
+                    case 'user':
+                        var users = datas[obj];
+                        for (var us in users) {
+                            switch (us) {
+                                case 'name':
+                                    table += '<br /><br /><br /><span>' + users[us] + '</span>　';
+                                    break;
+                                case 'url':
+                                    if (users[us] != null && users[us] != 'null') {
+                                        table += '<a href="' + users[us] + '" target="_blank">' + '<img src="' + users['profile_image_url'] + '" />' + '</a>';
+                                    }
+                                    else {
+                                        table += '<img src="' + users['profile_image_url'] + '" />';
+                                    }
+                                    break;
+                            }
+                        }
+                        break;
+                }
+
+            }
+            table += '</td>';
+            table += '</tr>';
+        }
+        table += '</tbody></table>';
+
+        return table;
+    }
+    else {
+        return '재검색 해주세요..';
+    }
+}
+
+function arrangeListToCell(listTbl, count){
+    try{
+        for(var i = 0; i < count; i++){
+            var cellCnt = listTbl.rows[i].cells.length;
+            for(var j = 0; j < cellCnt; j++){
+                if(listTbl.rows[i].cells[j].innerHTML == ''){
+                    listTbl.rows[i].cells[j].remove();
+                }
+            }
+        }
+    }
+    catch(e){
+        arrangeListToCell(listTbl, count);
     }
 }
