@@ -119,7 +119,7 @@ Twitter.prototype.GetJSON = function (method, callbackURL) {
 
 Twitter.prototype.CallBackURLString = '';
 
-Twitter.prototype.TwitterUserTimeLineOnList = function (jsonData, count) {
+/*Twitter.prototype.TwitterUserTimeLineOnList = function (jsonData, count) {
 	if(!jsonData) return;
     var profileImg, userName, userAcc, link, texts, times, ids, account;
     var pdiv = document.createElement('div');
@@ -192,7 +192,7 @@ Twitter.prototype.TwitterUserTimeLineOnList = function (jsonData, count) {
     }
     pdiv.className = 'mf_class_main';
     return pdiv;
-}
+}*/
 
 /// 트위터 검색 할때 사용하는 파라미터 (쿼리 스트링) 값을 지정
 /// q : 검색어 (# 해시태그 제외한 검색어)
