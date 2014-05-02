@@ -3,6 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="Content-Language" content="ja" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="user-scalable=no, initial-scale=1.0,maximum-scale=1.0, minimum-scale=1.0, width=device-width" />
     <title>러브라이브 트위터 일러스트</title>
     <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
@@ -34,7 +35,13 @@
             if (selects.selectedIndex == 0) return;
 
             if (selects.selectedIndex <= 2) {
-                var sea = tw.SearchConfig(values, 'recent', 'images');
+                var sea = '';
+                if (selects.selectedIndex == 1) {
+                    sea = tw.SearchConfig(values, 'recent', 'images');
+                }
+                else {
+                    sea = tw.SearchConfig(values, 'recent', 'images');
+                }
                 var callUrl = tw.SearchUrl(arr, sea);
                 tw.GetJSON('GET', callUrl);
             }
@@ -53,49 +60,49 @@
 
         function mst() {
             if (document.getElementsByTagName('select')[0].selectedIndex == 0) return;
+            var sb = null;
             ss.innerHTML = '';
             if (document.getElementsByTagName('select')[0].selectedIndex <= 2) {
-
-                var st = setTimeout('mst()', 250); // stack overflow 방지
-                ss.innerHTML = tw.ImageSearchResultToList(jsonData, 100, 140); // width 140
-                clearTimeout(st);
-
-                var sb = null;
                 try {
-                    sb = setTimeout('arrangeList()', 500);
+                    var sb = setTimeout('mst()', 250); // stack overflow 방지
+                    ss.appendChild(tw.ImageSearchResultToList(jsonData, 100, 140)); // width 140
                     clearTimeout(sb);
+                    cnt.innerHTML = '리스트 개수 : ' + document.getElementsByTagName('span').length;
                 }
-                catch (e) { }
+                catch (e) {
+                    //mst();
+                }
             }
             else {
                 try {
-                    var st = setTimeout('mst()', 250);
-                    ss.innerHTML = tw.ListStatusToTable(jsonData, 100);
-                    arrangeListToCell(mf_list_Tbl, 100);
-                    clearTimeout(st);
+                    var sb = setTimeout('mst()', 250);
+                    ss.appendChild(tw.ListStatusToTable(jsonData, 100));
+                    //arrangeListToCell(mf_list_Tbl, 100);
+                    clearTimeout(sb);
+                    cnt.innerHTML = '리스트 개수 : ' + (document.getElementsByTagName('img').length - 1);
                 }
-                catch (e) { }
+                catch (e) {
+                    //mst();
+                }
             }
         }
 
     </script>
     <style type="text/css">
         #ss, body {
-            max-width: 98%; /*96%*/
-            max-height: 95%;
             overflow: hidden;
         }
 
         .mf_class_main {
             max-width: 96%;
-            width: 270px;
+            min-width: 240px;
             max-height: 96%;
             overflow: auto;
             overflow-x: hidden;
             border: #bbb 1px solid;
         }
 
-        .mf_class_main td:hover {
+        .mf_class_main span.selSpan:hover, div.selDiv:hover {
                 background-color: #f5f8fa;
          }
 
@@ -111,26 +118,29 @@
             position: relative;
             overflow: auto;
             overflow-x: hidden;
-            height: 450px;
+            height: 420px;
         }
-        
-        nav li { display: inline-block; background-color: #f4f; }
+
     </style>
 </head>
 <body>
     <header>
-        <select onchange="setTweet(this.value)">
+        <div>
+        <select onchange="setTweet(this.value); mst();" style="width: 242px;">
             <option>선택</option>
             <option value="ラブライブ版深夜の真剣お絵描き60分一本勝負">러브라이브 60분 안에 그려보았다</option>
             <option value="ラブライブ！">러브라이브 관련 이미지</option>
             <option value="러브라이브 관련 원화가 정보">원화가 정보 리스트 (러브라이브)</option>
             <option value="일러스트레이터 정보">원화가 정보 리스트 (종합)</option>
         </select>
-        <input type="button" value="검색" onclick="mst()" />
+        <div id="cnt"></div>
+        </div>
     </header>
     <section>
         <article>
-            <div id="ss"></div>
+            <div id="ss" style="display: inline-block;">
+                선택해 주세요!
+            </div>
         </article>
     </section>
     <footer>
