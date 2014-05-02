@@ -1,20 +1,20 @@
 function stringToXML(xmlStr) {
-	var xmldom = '';
-	if(window.ActiveXObject){
-		xmldom = new ActiveXObject("Microsoft.XMLDOM");
-		xmldom.async = false;
-		xmldom.loadXML(xmlStr);
-	}
-	else {
-		var parser = new DOMParser();
-		xmldom = parser.parseFromString(xmlStr, "text/xml"); 
-	}
-	return xmldom;
+    var xmldom = '';
+    if (window.ActiveXObject) {
+        xmldom = new ActiveXObject("Microsoft.XMLDOM");
+        xmldom.async = false;
+        xmldom.loadXML(xmlStr);
+    }
+    else {
+        var parser = new DOMParser();
+        xmldom = parser.parseFromString(xmlStr, "text/xml");
+    }
+    return xmldom;
 }
 
-function isIE(){
+function isIE() {
     var flag = false;
-    if(window.ActiveXObject){
+    if (window.ActiveXObject) {
         alert('IE에서는 사용 불가 합니다.');
         window.history.go(-1);
         flag = true;
@@ -25,7 +25,7 @@ function isIE(){
 
 function AjaxToRequest() {
     var req;
-    if(!window.ActiveXObject){
+    if (!window.ActiveXObject) {
         req = new XMLHttpRequest();
     }
     else {
@@ -46,7 +46,7 @@ var jsonData;
 /// ③ : ArrayJSON() 메서드
 /// ④ : jsonData 변수 (JSON 배열)
 function Twitter() {
-    
+
 }
 
 /// 트위터 Auth 키 값 설정
@@ -57,8 +57,8 @@ function Twitter() {
 /// token_secreat : 토큰 시크릿 키
 /// screen_name : 조회/적용할 트위터 유저 ID
 /// 반환 : Auth 및 유저 ID 가 포함된 배열
-Twitter.prototype.AuthConfig = function(api_key, api_secreat, 
-    token_key, token_secreat, screen_name){
+Twitter.prototype.AuthConfig = function (api_key, api_secreat,
+    token_key, token_secreat, screen_name) {
     var arrConfig = [api_key, api_secreat, token_key, token_secreat, screen_name];
     return arrConfig;
 }
@@ -67,8 +67,8 @@ Twitter.prototype.AuthConfig = function(api_key, api_secreat,
 /// 해당 카운트 만큼 데이터를 가져오는 url을 제공 
 /// authConfig : 트위터 클래스 개체의 AuthConfig 값
 /// 반환 : REST (파라미터, 쿼리스트링) 형식의 URL 문자열 반환 
-Twitter.prototype.UserTimeLineUrl = function(authConfig) {
-    
+Twitter.prototype.UserTimeLineUrl = function (authConfig) {
+
     var authMessage = {
         method: 'GET',
         action: 'https://api.twitter.com/1.1/statuses/user_timeline.json',
@@ -102,14 +102,14 @@ Twitter.prototype.UserTimeLineUrl = function(authConfig) {
 /// 반환 : 전역 변수 twitterData에 JSON 형식의 배열 값을 적용
 /// 선행 조건 : JQuery 필수
 Twitter.prototype.GetJSON = function (method, callbackURL) {
-        $.ajax({
-            type: method,
-            url: callbackURL,
-            dataType: 'jsonp',
-            jsonp: false,
-            cache: true
-        }); // pure 자바스크립트 내에서 해결 방안 모색 중 입니다.
-        // 임시 방편으로 JQuery 라이브러리의 Ajax 처리 했습니다.
+    $.ajax({
+        type: method,
+        url: callbackURL,
+        dataType: 'jsonp',
+        jsonp: false,
+        cache: true
+    }); // pure 자바스크립트 내에서 해결 방안 모색 중 입니다.
+    // 임시 방편으로 JQuery 라이브러리의 Ajax 처리 했습니다.
 
     mf_callback = function (data) {
         jsonData = data;
@@ -119,8 +119,8 @@ Twitter.prototype.GetJSON = function (method, callbackURL) {
 
 Twitter.prototype.CallBackURLString = '';
 
-/*Twitter.prototype.TwitterUserTimeLineOnList = function (jsonData, count) {
-	if(!jsonData) return;
+Twitter.prototype.TwitterUserTimeLineOnList = function (jsonData, count) {
+    if (!jsonData) return;
     var profileImg, userName, userAcc, link, texts, times, ids, account;
     var pdiv = document.createElement('div');
     for (var i = 0; i < count; i++) {
@@ -192,7 +192,7 @@ Twitter.prototype.CallBackURLString = '';
     }
     pdiv.className = 'mf_class_main';
     return pdiv;
-}*/
+}
 
 /// 트위터 검색 할때 사용하는 파라미터 (쿼리 스트링) 값을 지정
 /// q : 검색어 (# 해시태그 제외한 검색어)
@@ -243,23 +243,23 @@ Twitter.prototype.SearchUrl = function (authConfig, searchConfig) {
     return url;
 }
 
-function isMobile(targetWindow){
+function isMobile(targetWindow) {
     var flag = false;
-	if(targetWindow.navigator.userAgent.indexOf('Android') > -1
+    if (targetWindow.navigator.userAgent.indexOf('Android') > -1
     || targetWindow.navigator.userAgent.indexOf('iPhone') > -1
     || targetWindow.navigator.userAgent.indexOf('iPod') > -1
     || targetWindow.navigator.userAgent.indexOf('PodBlackBerry') > -1
-    || targetWindow.navigator.userAgent.indexOf('webOS')> -1
-    || targetWindow.navigator.userAgent.indexOf('Windows Phone') > -1){
+    || targetWindow.navigator.userAgent.indexOf('webOS') > -1
+    || targetWindow.navigator.userAgent.indexOf('Windows Phone') > -1) {
         flag = true;
     }
-       
-	return flag;
+
+    return flag;
 }
 
 var arrangeflag = false;
-function arrangeList(){
-   
+function arrangeList() {
+
     try {
         var rowCnt = mf_tweet_tbl.rows.length;
         for (var i = 0; i < rowCnt; i++) {
@@ -281,10 +281,12 @@ function arrangeList(){
 }
 
 Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidth) {
-
+    var pDiv, imgTag, ank, spTag;
     if (typeof (jsonData) != 'undefined' || jsonData != null) {
         var datas = jsonData['statuses'];
-        var element = '<table id="mf_tweet_tbl" class="mf_class_main">';
+        var root = document.createElement('div');
+        root.className = 'mf_class_main';
+        root.setAttribute('id', 'mf_tweet_tbl');
         var arr = new Array();
         for (var i = 0; i < datas.length; i++) {
 
@@ -296,64 +298,53 @@ Twitter.prototype.ImageSearchResultToList = function (jsonData, count, imageWidt
                 }
             }
         }
-        element += '<tbody class="scrollView">';
+        pDiv = document.createElement('div');
+        pDiv.className = 'scrollView';
 
         for (var i = 0; i < count; i++) {
-            if (isMobile(window) == true) {
-                try {
-                    if (arr[i][0].expanded_url.indexOf('bot') > -1) {
-                        //i = i + 1;
-                        continue;
-                    }
-
-                    if (i % 2 == 0) {
-                        element += '<tr num="' + i / 2 + '">';
-                    }
-                    if (!isNaN(imageWidth)) {
-
-                        element += '<td>';
-                        element += '<a href="' + arr[i][0].expanded_url + '" target="_blank" style="border: none;">';
-                        element += '<img src="' + arr[i][0].media_url + '" style="width: ' + imageWidth + 'px; padding: 0px 7px;" />';
-                        element += '</td>';
-                    }
-                    if (i % 2 == 1) {
-                        element += '</tr>';
-                    }
+            try {
+                if (arr[i][0].expanded_url.indexOf('bot') > -1) {
+                    i = i + 1;
+                    continue;
                 }
-                catch (e) { }
-            }
-            else {
-                try {
-                    if (arr[i][0].expanded_url.indexOf('bot') > -1) {
-                        //i = i + 1;
-                        continue;
+
+                spTag = document.createElement('span');
+                spTag.setAttribute('num', i);
+                spTag.setAttribute('style', 'vertical-align: middle; display: inline-block;');
+                spTag.className = 'selSpan';
+
+                if (parseInt(imageWidth)) {
+
+                    ank = document.createElement('a');
+                    ank.setAttribute('href', arr[i][0].expanded_url);
+                    ank.setAttribute('target', '_blank');
+                    ank.setAttribute('style', 'border: none;');
+
+                    imgTag = document.createElement('img');
+                    imgTag.setAttribute('src', arr[i][0].media_url);
+
+                    if (window.navigator.userAgent.indexOf('Trident') > -1) {
+                        imgTag.style.cssText = 'width: ' + imageWidth + 'px; height: 70%; padding: 5px 5px; border: none; display: inline-block;';
+                    }
+                    else {
+                        imgTag.setAttribute('style', 'width: ' + imageWidth + 'px; height:' + (imageWidth + 140) + ' px; padding: 5px 5px; border: none; display: inline-block;');
                     }
 
-                    if (i % 5 == 0) {
-                        element += '<tr num="' + i + '">';
-                    }
-                    if (!isNaN(imageWidth)) {
-                        element += '<td>';
-                        element += '<a href="' + arr[i][0].expanded_url + '" target="_blank" style="border: none;">';
-                        element += '<img src="' + arr[i][0].media_url + '" style="width: ' + imageWidth + 'px; padding: 0px 7px;" />';
-                        element += '</td>';
-                    }
-                    if (i % 5 == 4) {
-                        element += '</tr>';
-                    }
+                    ank.appendChild(imgTag);
+                    spTag.appendChild(ank);
                 }
-                catch (e) { }
             }
+            catch (e) { }
+
+            pDiv.appendChild(spTag);
+            root.appendChild(pDiv);
         }
 
-        element += '</tbody>';
-        element += '</table>';
-
-        return element;
+        return root;
     }
     else {
         //this.ImageSearchResultToList(jsonData, count, imageWidth);
-        return '재검색 해주세요..';
+        return '재시도 해주세요..';
     }
 }
 
@@ -362,7 +353,7 @@ Twitter.prototype.ListConfig = function (slug, ownerScreenName, listID) {
     return arrConfig;
 }
 
-Twitter.prototype.FindListIdURL = function(authConfig, screenName){
+Twitter.prototype.FindListIdURL = function (authConfig, screenName) {
     var authMessage = {
         method: 'GET',
         action: 'https://api.twitter.com/1.1/lists/list.json',
@@ -393,7 +384,7 @@ Twitter.prototype.FindListIdURL = function(authConfig, screenName){
     return url;
 }
 
-Twitter.prototype.ListStatusURL = function(authConfig, listConfig){
+Twitter.prototype.ListStatusURL = function (authConfig, listConfig) {
     var authMessage = {
         method: 'GET',
         action: 'https://api.twitter.com/1.1/lists/statuses.json',
@@ -427,24 +418,50 @@ Twitter.prototype.ListStatusURL = function(authConfig, listConfig){
 }
 
 Twitter.prototype.ListStatusToTable = function (jsonData, count) {
+    var pDiv, imgTag, ank, spTag;
     if (typeof (jsonData) != 'undefined' || jsonData != null) {
-        var table = '<table id="mf_list_Tbl" class="mf_class_main">';
-        table += '<tbody class="scrollView">';
+        var root = document.createElement('div');
+        root.className = 'mf_class_main';
+        root.setAttribute('id', 'mf_list_Tbl');
+
+        pDiv = document.createElement('div');
+        pDiv.className = 'scrollView';
+
         for (var i = 0; i < count; i++) {
             var datas = jsonData[i];
-            table += '<tr num="' + i + '">';
+            spTag = document.createElement('span');
+            spTag.setAttribute('num', i);
+
+            var divAnk = document.createElement('a');
+            divAnk.setAttribute('style', 'border: none;');
+            divAnk.setAttribute('target', '_blank');
+
+            var spDiv = document.createElement('div');
+            spDiv.setAttribute('style', 'border: #f5f8fa 1px solid; display: block;');
+            spDiv.className = 'selDiv';
+
+            var txt = document.createElement('div');
+            var name = document.createElement('span');
+
+            var viewID = '';
+            var viewSpan = document.createElement('span');
             for (var obj in datas) {
                 switch (obj) {
+                    case 'id_str':
+                        viewID = datas[obj];
+                        break;
+
                     case 'text':
-                        table += '<td colspan="2" style="border: #f5f8fa 1px solid">';
-                        if (datas[obj].indexOf('http:') > -1) {
-                            table += '<p>' + datas[obj].split('http:')[0] + '</p>'
-                            + '<a href="http:' + datas[obj].split(/http:/g)[1].split(/\n|\r\n| |　/g)[0] + '" target="_blank">http:'
-                            + datas[obj].split(/http:/g)[1].split(/\n|\r\n| |　/g)[0] + '</a>';
+                        if (datas[obj].indexOf('http:') > -1) {//
+
+                            txt.innerHTML = datas[obj].split('http:')[0]
+                            + '<a href="http:' + datas[obj].split(/http:/g)[1].split(/\n|\r\n| |　|\)/g)[0] + '" target="_blank">http:'
+                            + datas[obj].split(/http:/g)[1].split(/\n|\r\n| |　|\)/g)[0] + '</a>';
                         }
                         else {
-                            table += '<p>' + datas[obj] + '</p>';
+                            txt.innerHTML = datas[obj];
                         }
+                        spTag.appendChild(txt);
                         break;
 
                     case 'user':
@@ -452,46 +469,65 @@ Twitter.prototype.ListStatusToTable = function (jsonData, count) {
                         for (var us in users) {
                             switch (us) {
                                 case 'name':
-                                    table += '<br /><br /><br /><span>' + users[us] + '</span>　';
+                                    name.innerHTML = '<br /><br />' + users[us] + '　';
+                                    spTag.appendChild(name);
                                     break;
+
                                 case 'url':
+                                    ank = document.createElement('a');
+                                    imgTag = document.createElement('img');
+                                    imgTag.setAttribute('style', 'border: none;');
+                                    imgTag.setAttribute('src', users['profile_image_url']);
+
                                     if (users[us] != null && users[us] != 'null') {
-                                        table += '<a href="' + users[us] + '" target="_blank">' + '<img src="' + users['profile_image_url'] + '" />' + '</a>';
+                                        ank.setAttribute('target', '_blank');
+                                        ank.setAttribute('href', users[us]);
+                                        ank.setAttribute('style', 'border: none;');
+
+                                        ank.appendChild(imgTag);
+                                        spTag.appendChild(ank);
                                     }
                                     else {
-                                        table += '<img src="' + users['profile_image_url'] + '" />';
+                                        spTag.appendChild(imgTag);
                                     }
+                                    break;
+
+                                case 'screen_name':
+                                    divAnk.setAttribute('href', 'https://twitter.com/#!/' + users[us] + '/status/' + viewID);
+                                    divAnk.innerHTML = 'view';
+                                    viewSpan.innerHTML = '　';
+                                    viewSpan.appendChild(divAnk);
                                     break;
                             }
                         }
                         break;
                 }
-
+                spTag.appendChild(viewSpan);
+                spDiv.appendChild(spTag);
+                pDiv.appendChild(spDiv);
             }
-            table += '</td>';
-            table += '</tr>';
         }
-        table += '</tbody></table>';
+        root.appendChild(pDiv);
 
-        return table;
+        return root;
     }
     else {
-        return '재검색 해주세요..';
+        return '재시도 해주세요..';
     }
 }
 
-function arrangeListToCell(listTbl, count){
-    try{
-        for(var i = 0; i < count; i++){
+function arrangeListToCell(listTbl, count) {
+    try {
+        for (var i = 0; i < count; i++) {
             var cellCnt = listTbl.rows[i].cells.length;
-            for(var j = 0; j < cellCnt; j++){
-                if(listTbl.rows[i].cells[j].innerHTML == ''){
+            for (var j = 0; j < cellCnt; j++) {
+                if (listTbl.rows[i].cells[j].innerHTML == '') {
                     listTbl.rows[i].cells[j].remove();
                 }
             }
         }
     }
-    catch(e){
+    catch (e) {
         arrangeListToCell(listTbl, count);
     }
 }
